@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Danfoo - Transport Booking</title>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚌 Danfoo</h1>
+            <p class="subtitle">Fast, Reliable Transport Booking</p>
+        </header>
+
+        <!-- Search Trips Section -->
+        <div class="section">
+            <h2>🔍 Find Your Trip</h2>
+            <form id="searchForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="origin">From</label>
+                        <input type="text" id="origin" placeholder="Origin city" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="destination">To</label>
+                        <input type="text" id="destination" placeholder="Destination city" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="date">Travel Date</label>
+                        <input type="date" id="date">
+                    </div>
+                    <div class="form-group" style="align-self: end;">
+                        <button type="submit" class="btn">Search Trips</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Available Trips Section -->
+        <div class="section">
+            <h2>🚍 Available Trips</h2>
+            <div id="tripsContainer">
+                <div class="loading">Search for trips to see available options...</div>
+            </div>
+        </div>
+
+        <!-- My Bookings Section -->
+        <div class="section">
+            <h2>📋 My Bookings</h2>
+            <button class="btn btn-secondary" onclick="loadBookings()" style="margin-bottom: 20px;">
+                Refresh Bookings
+            </button>
+            <div id="bookingsContainer">
+                <div class="loading">Click "Refresh Bookings" to view your bookings...</div>
+            </div>
+        </div>
+    </div>
+<script src="script.js"></script>
+</body>
+</html>
