@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import { createClient } from '@supabase/supabase-js';
+import authRoute from './routes/auth.js'
 import tripsRoutes from './routes/trips.js';
 import bookingsRoutes from './routes/bookings.js';
 
@@ -17,7 +18,7 @@ const supabase = createClient(
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static("public"));
 
 // Make supabase available to all routes
 app.use((req, res, next) => {
@@ -25,6 +26,7 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use('/api/auth', authRoute);
 app.use('/api/trips', tripsRoutes);
 app.use('/api/bookings', bookingsRoutes);
 

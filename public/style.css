@@ -34,6 +34,12 @@ h1 {
   margin-bottom: 10px;
 }
 
+select, option {
+  color: black;          /* text color */
+  background-color: white; /* dropdown background */
+}
+
+
 .subtitle {
   color: #333;
   font-size: 1.1rem;

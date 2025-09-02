@@ -1,14 +1,14 @@
 const API_BASE = "http://localhost:3000/api";
 
 // Search for trips
-document.getElementById('searchForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const origin = document.getElementById('origin').value;
-    const destination = document.getElementById('destination').value;
-    const date = document.getElementById('date').value;
-    
-    await searchTrips(origin, destination, date);
+document.getElementById("searchForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const origin = document.getElementById("origin").value;
+  const destination = document.getElementById("destination").value;
+  const date = document.getElementById("date").value;
+
+  await searchTrips(origin, destination, date);
 });
 
 // Display trips
@@ -120,74 +120,76 @@ function toggleBookingForm(tripId) {
 
 // Book a trip
 async function bookTrip(tripId) {
-    const name = document.getElementById(`name${tripId}`).value;
-    const phone = document.getElementById(`phone${tripId}`).value;
-    const seats = document.getElementById(`seats${tripId}`).value;
-    
-    if (!name || !phone) {
-        alert('Please fill in all required fields');
-        return;
+  const name = document.getElementById(`name${tripId}`).value;
+  const phone = document.getElementById(`phone${tripId}`).value;
+  const seats = document.getElementById(`seats${tripId}`).value;
+
+  if (!name || !phone) {
+    alert("Please fill in all required fields");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE}/bookings`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        trip_id: tripId,
+        seats_booked: parseInt(seats),
+        passenger_name: name,
+        passenger_phone: phone,
+      }),
+    });
+
+    const result = await response.json();
+    console.log("Booking response:", result);
+
+    if (response.ok) {
+      alert(
+        `Booking successful! Total amount: ₦${result.total_amount.toLocaleString()}`
+      );
+
+      // Clear the form
+      document.getElementById(`name${tripId}`).value = "";
+      document.getElementById(`phone${tripId}`).value = "";
+      toggleBookingForm(tripId);
+
+      // Refresh trips by re-searching with current form values
+      const origin = document.getElementById("origin").value;
+      const destination = document.getElementById("destination").value;
+      const date = document.getElementById("date").value;
+
+      if (origin && destination) {
+        await searchTrips(origin, destination, date);
+      }
+    } else {
+      alert("Booking failed: " + result.error);
     }
-    
-    try {
-        const response = await fetch(`${API_BASE}/bookings`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                trip_id: tripId,
-                seats_booked: parseInt(seats),
-                passenger_name: name,
-                passenger_phone: phone
-            })
-        });
-        
-        const result = await response.json();
-        console.log('Booking response:', result);
-        
-        if (response.ok) {
-            alert(`Booking successful! Total amount: ₦${result.total_amount.toLocaleString()}`);
-            
-            // Clear the form
-            document.getElementById(`name${tripId}`).value = '';
-            document.getElementById(`phone${tripId}`).value = '';
-            toggleBookingForm(tripId);
-            
-            // Refresh trips by re-searching with current form values
-            const origin = document.getElementById('origin').value;
-            const destination = document.getElementById('destination').value;
-            const date = document.getElementById('date').value;
-            
-            if (origin && destination) {
-                await searchTrips(origin, destination, date);
-            }
-            
-        } else {
-            alert('Booking failed: ' + result.error);
-        }
-    } catch (error) {
-        console.error('Network error:', error);
-        alert('Error creating booking. Please try again.');
-    }
+  } catch (error) {
+    console.error("Network error:", error);
+    alert("Error creating booking. Please try again.");
+  }
 }
 
 // Extract search logic to reusable function
 async function searchTrips(origin, destination, date) {
-    const container = document.getElementById('tripsContainer');
-    container.innerHTML = '<div class="loading">Searching for trips...</div>';
-    
-    try {
-        const params = new URLSearchParams({ origin, destination });
-        if (date) params.append('date', date + 'T00:00:00');
-        
-        const response = await fetch(`${API_BASE}/trips/search?${params}`);
-        const trips = await response.json();
-        
-        displayTrips(trips);
-    } catch (error) {
-        container.innerHTML = '<div class="error">Error searching for trips. Please try again.</div>';
-    }
+  const container = document.getElementById("tripsContainer");
+  container.innerHTML = '<div class="loading">Searching for trips...</div>';
+
+  try {
+    const params = new URLSearchParams({ origin, destination });
+    if (date) params.append("date", date + "T00:00:00");
+
+    const response = await fetch(`${API_BASE}/trips/search?${params}`);
+    const trips = await response.json();
+
+    displayTrips(trips);
+  } catch (error) {
+    container.innerHTML =
+      '<div class="error">Error searching for trips. Please try again.</div>';
+  }
 }
 
 // Load bookings
