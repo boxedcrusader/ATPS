@@ -2,8 +2,12 @@ import express from 'express';
 const authRoute = express.Router();
 
 // Test route (no auth required)
-authRoute.get('/test', (req, res) => {
-  res.json({ message: 'Auth routes working' });
+authRoute.get('/test', (req, res) => {try {
+  
+    res.json({ message: 'Auth routes working' });
+} catch (err) {
+  console.log(err)
+}
 });
 
 // Sign up
@@ -30,7 +34,7 @@ authRoute.post('/signup', async (req, res) => {
     res.status(201).json({
       message: 'Account created successfully',
       user: data.user,
-      session: data.session
+      token: data.session.access_token
     });
     
   } catch (error) {
@@ -40,7 +44,7 @@ authRoute.post('/signup', async (req, res) => {
 });
 
 // Sign in  
-authRoute.post('/signin', async (req, res) => {
+authRoute.post('/log-in', async (req, res) => {
   const { email, password } = req.body;
   
   console.log('Signin attempt:', { email });
@@ -68,11 +72,11 @@ authRoute.post('/signin', async (req, res) => {
     res.json({
       message: 'Login successful',
       user: data.user,
-      session: data.session
+      token: data.session.access_token 
     });
     
   } catch (error) {
-    console.log('Signin error:', error);
+    console.log('Log-in error:', error);
     res.status(500).json({ error: 'Server error during signin' });
   }
 });

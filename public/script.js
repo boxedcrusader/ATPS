@@ -1,5 +1,114 @@
 const API_BASE = "http://localhost:3000/api";
 
+window.addEventListener("load", () => {
+  toggleModal("loginModal");
+  handlePaymentReturn(); 
+});
+
+function toggleModal(showId, hideId = null) {
+  if (hideId) {
+    document.getElementById(hideId).classList.add("hidden");
+    document.getElementById(hideId).classList.remove("show");
+  }
+  const showModal = document.getElementById(showId);
+  showModal.classList.remove("hidden");
+  showModal.classList.add("show");
+}
+
+function closeModal(id) {
+  const modal = document.getElementById(id);
+  modal.classList.remove("show");
+  setTimeout(() => modal.classList.add("hidden"), 300); // wait for fade
+}
+
+//Log user in
+document.getElementById("loginForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  logUserIn();
+});
+
+async function logUserIn() {
+  const email = document.getElementById("loginEmail").value;
+  const password = document.getElementById("loginPassword").value;
+
+  if (!email || !password) {
+    alert("Please fill in all required fields");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE}/auth/log-in`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: email,
+        password: password,
+      }),
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      alert("Login successful!");
+      closeModal("loginModal");
+      // maybe store JWT/token
+      localStorage.setItem("token", result.token);
+    } else {
+      alert(result.message || "Login failed. Please try again.");
+    }
+  } catch (error) {
+    console.error("Network error:", error);
+    alert("Error logging in. Please try again.");
+  }
+}
+
+//create new user
+document.getElementById("signupForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  createNewUser();
+});
+
+async function createNewUser() {
+  const email = document.getElementById("signupEmail").value;
+  const password = document.getElementById("signupPassword").value;
+  const fullName = document.getElementById("fullName").value;
+
+  if (!email || !password || !fullName) {
+    alert("Please fill in all required fields");
+    return;
+  } else {
+    try {
+      const response = await fetch(`${API_BASE}/auth/signup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+          full_name: fullName,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert("Signup successful!");
+        closeModal("signupModal");
+        // maybe store JWT/token
+        localStorage.setItem("token", result.token);
+      } else {
+        alert(result.message || "Signup failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+      alert("Error creating your account. Please try again.");
+    }
+  }
+}
+
 // Search for trips
 document.getElementById("searchForm").addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -129,17 +238,26 @@ async function bookTrip(tripId) {
     return;
   }
 
+    // Check if user is logged in
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("Please log in to make a booking");
+    return;
+  }
+
   try {
     const response = await fetch(`${API_BASE}/bookings`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
       },
       body: JSON.stringify({
         trip_id: tripId,
         seats_booked: parseInt(seats),
         passenger_name: name,
         passenger_phone: phone,
+        //user_id: userId
       }),
     });
 
@@ -147,9 +265,15 @@ async function bookTrip(tripId) {
     console.log("Booking response:", result);
 
     if (response.ok) {
-      alert(
-        `Booking successful! Total amount: ₦${result.total_amount.toLocaleString()}`
+      const proceedToPayment = confirm(
+        `Booking successful! Total amount: ₦${result.total_amount.toLocaleString()}\n\nWould you like to pay now?`
       );
+
+      if (proceedToPayment) {
+        console.log("Calling payForBooking with:", result.booking_id)
+        await payForBooking(result.booking.id);
+        return; // Don't clear form yet if redirecting to payment
+      }
 
       // Clear the form
       document.getElementById(`name${tripId}`).value = "";
@@ -170,6 +294,33 @@ async function bookTrip(tripId) {
   } catch (error) {
     console.error("Network error:", error);
     alert("Error creating booking. Please try again.");
+  }
+}
+
+// Pay for booking
+async function payForBooking(bookingId) {
+  try {
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(`${API_BASE}/bookings/${bookingId}/pay`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      // Redirect to Paystack payment page
+      window.location.href = result.authorization_url;
+    } else {
+      alert("Payment initialization failed: " + result.error);
+    }
+  } catch (error) {
+    console.error("Payment error:", error);
+    alert("Error initializing payment. Please try again.");
   }
 }
 
@@ -198,7 +349,11 @@ async function loadBookings() {
   container.innerHTML = '<div class="loading">Loading bookings...</div>';
 
   try {
-    const response = await fetch(`${API_BASE}/bookings`);
+    const response = await fetch(`${API_BASE}/bookings`, {
+  headers: {
+    "Authorization": `Bearer ${localStorage.getItem("token")}`
+  }
+});
     const bookings = await response.json();
 
     displayBookings(bookings);
@@ -265,11 +420,18 @@ function displayBookings(bookings) {
                         </div>
                     </div>
                     
-                    <button class="btn btn-danger" onclick="cancelBooking(${
-                      booking.id
-                    })" style="margin-top: 15px;">
-                        Cancel Booking
-                    </button>
+                    <div style="margin-top: 15px; display: flex; gap: 10px;">
+  ${
+    booking.booking_status === "pending"
+      ? `<button class="btn" onclick="payForBooking(${booking.id})">
+      Pay Now
+    </button>`
+      : ""
+  }
+  <button class="btn btn-danger" onclick="cancelBooking(${booking.id})">
+    Cancel Booking
+  </button>
+</div>
                 </div>
             `
     )
@@ -283,10 +445,12 @@ async function cancelBooking(bookingId) {
   }
 
   try {
-    const response = await fetch(`${API_BASE}/bookings/${bookingId}`, {
-      method: "DELETE",
-    });
-
+   const response = await fetch(`${API_BASE}/bookings/${bookingId}`, {
+  method: "DELETE",
+  headers: {
+    "Authorization": `Bearer ${localStorage.getItem("token")}`
+  }
+});
     const result = await response.json();
 
     if (response.ok) {
@@ -297,6 +461,20 @@ async function cancelBooking(bookingId) {
     }
   } catch (error) {
     alert("Error cancelling booking. Please try again.");
+  }
+}
+
+// Handle payment return (call this on page load if needed)
+function handlePaymentReturn() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const reference = urlParams.get('reference');
+  
+  if (reference) {
+    alert('Payment completed! Please check your bookings for confirmation.');
+    // Optionally load bookings to show updated status
+    loadBookings();
+    // Clean up URL
+    window.history.replaceState({}, document.title, window.location.pathname);
   }
 }
 

@@ -289,3 +289,139 @@ input::placeholder {
     gap: 10px;
   }
 }
+
+/* === MODAL OVERLAY === */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.9); /* overlay dim */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+/* when active */
+.modal.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* === MODAL CARD === */
+.modal-content {
+  background: rgba(0, 0, 0, 0.85);
+  border: 2px solid #f1c40f;
+  border-radius: 16px;
+  padding: 40px 30px;
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+  animation: slideUp 0.35s ease;
+}
+
+/* === CLOSE BUTTON === */
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #f1c40f;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+.modal-close:hover {
+  color: #f39c12;
+}
+
+/* === HEADINGS === */
+.modal-content h2 {
+  color: #f1c40f;
+  font-size: 1.8rem;
+  margin-bottom: 25px;
+  text-align: center;
+  font-weight: 700;
+}
+
+/* === FORM ELEMENTS === */
+.modal-content form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.modal-content label {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.modal-content input {
+  padding: 14px;
+  border-radius: 10px;
+  border: 2px solid #333;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+.modal-content input:focus {
+  border-color: #f1c40f;
+  background: rgba(255, 255, 255, 0.15);
+  outline: none;
+}
+
+/* === CTA BUTTON === */
+.modal-content .btn {
+  margin-top: 10px;
+  width: 100%;
+  padding: 14px;
+  font-size: 1rem;
+  border-radius: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* === LINK (switch modal) === */
+.modal-content a {
+  display: block;
+  text-align: center;
+  margin-top: 15px;
+  font-size: 0.9rem;
+  color: #f1c40f;
+  transition: color 0.2s ease;
+}
+.modal-content a:hover {
+  color: #f39c12;
+}
+
+/* === ANIMATION === */
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 480px) {
+  .modal-content {
+    padding: 25px 20px;
+    max-width: 90%;
+  }
+  .modal-content h2 {
+    font-size: 1.5rem;
+  }
+}

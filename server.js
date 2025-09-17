@@ -5,6 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 import authRoute from './routes/auth.js'
 import tripsRoutes from './routes/trips.js';
 import bookingsRoutes from './routes/bookings.js';
+import requireAuth from './middleware/auth.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -28,33 +29,11 @@ app.use((req, res, next) => {
 
 app.use('/api/auth', authRoute);
 app.use('/api/trips', tripsRoutes);
-app.use('/api/bookings', bookingsRoutes);
+app.use('/api/bookings', requireAuth,bookingsRoutes);
 
 // Basic test route
 app.get('/api/test', (req, res) => {
   res.json({ message: 'Server is running with ES modules!' });
-});
-
-// Test Supabase connection
-app.get('/api/test-db', async (req, res) => {
-  try {
-    const { data, error } = await req.supabase
-      .from('routes')
-      .select('*')
-      .limit(1);
-    
-    if (error) throw error;
-    
-    res.json({ 
-      message: 'Database connected successfully!', 
-      data: data 
-    });
-  } catch (error) {
-    res.status(500).json({ 
-      error: 'Database connection failed', 
-      details: error.message 
-    });
-  }
 });
 
 app.listen(PORT, () => {

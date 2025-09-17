@@ -1,4 +1,4 @@
-export const requireAuth = async (req, res, next) => {
+export default async function requireAuth (req, res, next) {
   try {
     const authHeader = req.headers.authorization;
     

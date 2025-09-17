@@ -13,8 +13,10 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.56.0",
     "argon2": "^0.44.0",
+    "axios": "^1.12.2",
     "bcrypt": "^6.0.0",
     "body-parser": "^2.2.0",
+    "claude": "^0.1.1",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "dotenv": "^17.2.1",
