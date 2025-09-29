@@ -1,64 +1,42 @@
-import express from 'express';
+import express from "express";
 const authRoute = express.Router();
 
-// Test route (no auth required)
-authRoute.get('/test', (req, res) => {try {
-  
-    res.json({ message: 'Auth routes working' });
-} catch (err) {
-  console.log(err)
-}
-});
-
 // Sign up
-authRoute.post('/signup', async (req, res) => {
+authRoute.post("/signup", async (req, res) => {
   const { email, password, full_name } = req.body;
-  
-  console.log('Signup attempt:', { email, full_name });
-  
+
   try {
     const { data, error } = await req.supabase.auth.signUp({
       email,
       password,
       options: {
-        data: { full_name }
-      }
+        data: { full_name },
+      },
     });
-
-    console.log('Signup result:', { data: !!data, error });
 
     if (error) {
       return res.status(400).json({ error: error.message });
     }
 
     res.status(201).json({
-      message: 'Account created successfully',
+      message: "Account created successfully",
       user: data.user,
-      token: data.session.access_token
+      token: data.session.access_token,
     });
-    
   } catch (error) {
-    console.log('Signup error:', error);
-    res.status(500).json({ error: 'Server error during signup' });
+    console.log("Signup error:", error);
+    res.status(500).json({ error: "Server error during signup" });
   }
 });
 
-// Sign in  
-authRoute.post('/log-in', async (req, res) => {
+// Sign in
+authRoute.post("/log-in", async (req, res) => {
   const { email, password } = req.body;
-  
-  console.log('Signin attempt:', { email });
-  
+
   try {
     const { data, error } = await req.supabase.auth.signInWithPassword({
       email,
-      password
-    });
-
-    console.log('Signin result:', { 
-      user: !!data.user, 
-      session: !!data.session,
-      error: error?.message 
+      password,
     });
 
     if (error) {
@@ -66,43 +44,44 @@ authRoute.post('/log-in', async (req, res) => {
     }
 
     if (!data.session) {
-      return res.status(400).json({ error: 'No session created' });
+      return res.status(400).json({ error: "No session created" });
     }
 
     res.json({
-      message: 'Login successful',
+      message: "Login successful",
       user: data.user,
-      token: data.session.access_token 
+      token: data.session.access_token,
     });
-    
   } catch (error) {
-    console.log('Log-in error:', error);
-    res.status(500).json({ error: 'Server error during signin' });
+    console.log("Log-in error:", error);
+    res.status(500).json({ error: "Server error during signin" });
   }
 });
 
 // Get user info (protected)
-authRoute.get('/user', async (req, res) => {
+authRoute.get("/user", async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
-    
+
     if (!authHeader) {
-      return res.status(401).json({ error: 'No authorization header' });
+      return res.status(401).json({ error: "No authorization header" });
     }
 
-    const token = authHeader.replace('Bearer ', '');
-    
-    const { data: { user }, error } = await req.supabase.auth.getUser(token);
-    
+    const token = authHeader.replace("Bearer ", "");
+
+    const {
+      data: { user },
+      error,
+    } = await req.supabase.auth.getUser(token);
+
     if (error || !user) {
-      return res.status(401).json({ error: 'Invalid token' });
+      return res.status(401).json({ error: "Invalid token" });
     }
 
     res.json({ user });
-    
   } catch (error) {
-    console.log('Get user error:', error);
-    res.status(401).json({ error: 'Authentication failed' });
+    console.log("Get user error:", error);
+    res.status(401).json({ error: "Authentication failed" });
   }
 });
 

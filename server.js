@@ -5,7 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 import authRoute from './routes/auth.js'
 import tripsRoutes from './routes/trips.js';
 import bookingsRoutes from './routes/bookings.js';
-import requireAuth from './middleware/auth.js';
+import redis from './config/redisClient.js'
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -27,9 +27,14 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use((req, res, next) => {
+  req.redis = redis;
+  next()
+})
+
 app.use('/api/auth', authRoute);
 app.use('/api/trips', tripsRoutes);
-app.use('/api/bookings', requireAuth,bookingsRoutes);
+app.use('/api/bookings', bookingsRoutes);
 
 // Basic test route
 app.get('/api/test', (req, res) => {

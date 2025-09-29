@@ -18,13 +18,82 @@ body {
   padding: 20px;
 }
 
+/* Header Styling */
 header {
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 40px;
-  padding: 30px 0;
+  padding: 30px;
   background: linear-gradient(45deg, #f1c40f, #f39c12);
   border-radius: 15px;
   box-shadow: 0 10px 30px rgba(241, 196, 15, 0.3);
+}
+
+.header-left {
+  text-align: left;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: rgba(0, 0, 0, 0.1);
+  padding: 12px 20px;
+  border-radius: 25px;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.header-right:hover {
+  background: rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.header-right h2 {
+  color: #000;
+  font-size: 1rem;
+  margin: 0;
+  font-weight: 600;
+}
+
+.wallet-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.header-right:hover .wallet-icon {
+  background: rgba(0, 0, 0, 0.2);
+  transform: scale(1.1);
+}
+
+.balance {
+  color: #000;
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+/* Responsive Header */
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    text-align: center;
+    gap: 20px;
+    padding: 20px;
+  }
+
+  .header-left {
+    text-align: center;
+  }
 }
 
 h1 {
@@ -34,11 +103,67 @@ h1 {
   margin-bottom: 10px;
 }
 
-select, option {
-  color: black;          /* text color */
-  background-color: white; /* dropdown background */
+select option {
+  background: #1a1a1a; 
+  color: #fff;             
+  font-size: 1rem;
 }
 
+select option:checked {
+  background: #f39c12;
+  color: #000;
+  font-weight: bold;
+}
+
+/* Logout Button - Subtle Style (matches header design) */
+.logout-btn {
+  background: rgba(0, 0, 0, 0.1);
+  color: #000;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.logout-btn:hover {
+  background: rgba(231, 76, 60, 0.9);
+  border-color: #c0392b;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+}
+
+.logout-btn:active {
+  transform: translateY(0);
+}
+
+/* Alternative: Prominent Red Button */
+.logout-btn-prominent {
+  background: linear-gradient(45deg, #e74c3c, #c0392b);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+}
+
+.logout-btn-prominent:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(231, 76, 60, 0.4);
+}
+
+.logout-btn-prominent:active {
+  transform: translateY(0);
+}
 
 .subtitle {
   color: #333;

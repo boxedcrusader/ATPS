@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Driver app</title>
+</head>
+<body style="
+      background-image: url('assets/images/design_bg.png');
+      background-position: center;
+    ">
+    <div class="container">
+              <!-- Login Modal -->
+      <div id="loginModal" class="modal hidden">
+        <div class="section modal-content">
+          <h2>Welcome back to danfoo!</h2>
+          <form id="loginForm">
+            <label for="loginEmail">Email:</label>
+            <input type="text" id="loginEmail" placeholder="Enter your email" />
+
+            <label for="loginPassword">Password:</label>
+            <input
+              type="password"
+              id="loginPassword"
+              placeholder="Enter your password"
+            />
+
+            <button class="btn">Sign in</button>
+          </form>
+          <a href="#" onclick="toggleModal('signupModal', 'loginModal')">
+            Your first ride? Sign-Up
+          </a>
+        </div>
+      </div>
+
+      <!-- Sign up Modal -->
+      <div id="signupModal" class="modal hidden">
+        <div class="section modal-content">
+          <h2>Welcome to danfoo!</h2>
+          <form id="signupForm">
+            <label for="fullName">Full-Name:</label>
+            <input type="text" id="fullName" placeholder="Enter full name" />
+
+            <label for="signupEmail">Email:</label>
+            <input type="text" id="signupEmail" placeholder="Enter email" />
+
+            <label for="signupPassword">Password:</label>
+            <input
+              type="password"
+              id="signupPassword"
+              placeholder="Create password"
+            />
+
+            <button class="btn">Sign Up</button>
+          </form>
+          <a href="#" onclick="toggleModal('loginModal', 'signupModal')">
+            Already have an account? Log in
+          </a>
+        </div>
+      </div>
+    
+     <!-- Header -->
+        <header>
+            <div class="header-left">
+                <h1>🚌 Danfoo Driver</h1>
+                <p class="subtitle">Professional Transport Service</p>
+            </div>
+            <div class="header-right">
+                <div class="driver-status">
+                    <div class="status-indicator" id="statusIndicator"></div>
+                    <h2>Driver: <span id="driver_name">John Doe</span></h2>
+                </div>
+                <button id="statusToggle" class="btn btn-secondary">Go Online</button>
+                <button id="logoutButton" class="logout-btn">Log out</button>
+            </div>
+        </header>
+
+        <!-- Driver Login Modal -->
+        <div id="driverLoginModal" class="modal hidden">
+            <div class="section modal-content">
+                <h2>Driver Login</h2>
+                <form id="driverLoginForm">
+                    <label for="driverEmail">Email:</label>
+                    <input type="text" id="driverEmail" placeholder="Enter your driver email" />
+
+                    <label for="driverPassword">Password:</label>
+                    <input type="password" id="driverPassword" placeholder="Enter your password" />
+
+                    <label for="driverLicense">License Number:</label>
+                    <input type="text" id="driverLicense" placeholder="Driver license number" />
+
+                    <button class="btn">Sign In</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Current Trip Section -->
+        <div class="section">
+            <h2>🚍 Current Trip</h2>
+            <div id="currentTripContainer">
+                <div class="loading">No active trip</div>
+            </div>
+        </div>
+
+        <!-- Today's Trips Section -->
+        <div class="section">
+            <h2>📅 Today's Schedule</h2>
+            <button class="btn btn-secondary" onclick="loadTodaysTrips()" style="margin-bottom: 20px">
+                Refresh Schedule
+            </button>
+            <div id="todaysTripsContainer">
+                <div class="loading">Click "Refresh Schedule" to view today's trips...</div>
+            </div>
+        </div>
+
+        <!-- Trip History Section -->
+        <div class="section">
+            <h2>📋 Trip History</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="historyStartDate">From Date</label>
+                    <input type="date" id="historyStartDate" />
+                </div>
+                <div class="form-group">
+                    <label for="historyEndDate">To Date</label>
+                    <input type="date" id="historyEndDate" />
+                </div>
+                <div class="form-group" style="align-self: end">
+                    <button class="btn" onclick="loadTripHistory()">Load History</button>
+                </div>
+            </div>
+            <div id="tripHistoryContainer">
+                <div class="loading">Select date range to view trip history...</div>
+            </div>
+        </div>
+
+        <!-- Driver Stats Section -->
+        <div class="section">
+            <h2>📊 Performance Stats</h2>
+            <div class="form-grid">
+                <div class="detail-item">
+                    <div class="detail-label">Trips This Month</div>
+                    <div class="detail-value" id="monthlyTrips">0</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Total Earnings</div>
+                    <div class="detail-value" id="totalEarnings">₦0</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Rating</div>
+                    <div class="detail-value" id="driverRating">5.0 ⭐</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Status</div>
+                    <div class="detail-value" id="onlineStatus">Offline</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Emergency Section -->
+        <div class="section">
+            <h2>🚨 Emergency & Support</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <button class="btn btn-danger" onclick="reportEmergency()">
+                        Emergency Alert
+                    </button>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-secondary" onclick="reportIncident()">
+                        Report Incident
+                    </button>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-secondary" onclick="contactSupport()">
+                        Contact Support
+                    </button>
+                </div>
+                <div class="form-group">
+                    <button class="btn" onclick="updateLocation()">
+                        Update Location
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Incident Report Modal -->
+    <div id="incidentModal" class="modal hidden">
+        <div class="section modal-content">
+            <h2>Report Incident</h2>
+            <form id="incidentForm">
+                <label for="incidentType">Incident Type:</label>
+                <select id="incidentType" required>
+                    <option value="">Select incident type</option>
+                    <option value="breakdown">Vehicle Breakdown</option>
+                    <option value="accident">Traffic Accident</option>
+                    <option value="delay">Trip Delay</option>
+                    <option value="passenger">Passenger Issue</option>
+                    <option value="other">Other</option>
+                </select>
+
+                <label for="incidentDescription">Description:</label>
+                <textarea id="incidentDescription" rows="4" placeholder="Describe the incident..." required></textarea>
+
+                <label for="incidentLocation">Location:</label>
+                <input type="text" id="incidentLocation" placeholder="Current location or landmark" />
+
+                <div class="form-grid">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('incidentModal')">Cancel</button>
+                    <button type="submit" class="btn">Submit Report</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    </div>
+</body>
+</html>
