@@ -1,6 +1,6 @@
 # 🚌 APTS - Bus Booking System
 
-APTS (Automated Passenger Transport System) is a web-based bus booking platform that allows users to search trips, view seat availability, and book tickets online. It also provides authentication (signup/login) for passengers to manage their bookings.
+APTS (Automated Passenger Transport System) is a web-based bus booking platform that allows users to search trips, view seat availability, and book tickets online.
 
 ---
 
