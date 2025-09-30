@@ -1,11 +1,14 @@
-import 'dotenv/config';
-import express from 'express';
-import cors from 'cors';
-import { createClient } from '@supabase/supabase-js';
-import authRoute from './routes/auth.js'
-import tripsRoutes from './routes/trips.js';
-import bookingsRoutes from './routes/bookings.js';
-import redis from './config/redisClient.js'
+import "dotenv/config";
+import express from "express";
+import cors from "cors";
+import { createClient } from "@supabase/supabase-js";
+import authRoute from "./routes/auth.js";
+import driverRoutes from "./routes/driver.js";
+import reportRoute from "./routes/reports.js"
+import tripsRoutes from "./routes/trips.js";
+import bookingsRoutes from "./routes/bookings.js";
+import redis from "./config/redisClient.js";
+import requireAuth from "./middleware/auth.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -29,16 +32,18 @@ app.use((req, res, next) => {
 
 app.use((req, res, next) => {
   req.redis = redis;
-  next()
-})
+  next();
+});
 
-app.use('/api/auth', authRoute);
-app.use('/api/trips', tripsRoutes);
-app.use('/api/bookings', bookingsRoutes);
+app.use("/api/auth", authRoute);
+app.use("/api/driver", driverRoutes);
+app.use("/api/report", requireAuth, reportRoute);
+app.use("/api/trips", tripsRoutes);
+app.use("/api/bookings", bookingsRoutes);
 
 // Basic test route
-app.get('/api/test', (req, res) => {
-  res.json({ message: 'Server is running with ES modules!' });
+app.get("/api/test", (req, res) => {
+  res.json({ message: "Server is running with ES modules!" });
 });
 
 app.listen(PORT, () => {

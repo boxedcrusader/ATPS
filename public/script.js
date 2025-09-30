@@ -178,7 +178,7 @@ async function apiRequest(url, options = {}) {
 
 // Alert/Notification System
 function showAlert(message, type = "info") {
-  // Enhanced alert system - you can replace with a proper notification library
+  // Enhanced alert system - replace with a proper notification library
   if (type === "error") {
     alert(`Error: ${message}`);
   } else if (type === "success") {

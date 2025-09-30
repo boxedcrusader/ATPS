@@ -1,8 +1,9 @@
 import express from "express";
+import requireAuth from "../middleware/auth.js";
 const router = express.Router();
 
 // Get all available trips
-router.get("/", async (req, res) => {
+router.get("/", requireAuth, async (req, res) => {
   try {
     const cacheKey = "trips:all";
 
@@ -40,6 +41,38 @@ router.get("/", async (req, res) => {
   }
 });
 
+// Get driver trips by date range
+router.get("/history", requireAuth, async (req, res) => {
+  const { startDate, endDate } = req.query;
+  const driverId = req.user.id; // assuming middleware attaches driver id
+
+  if (!startDate || !endDate) {
+    return res.status(400).json({ error: "Please select a time frame" });
+  }
+
+  try {
+    const { data, error } = await req.supabase
+      .from("trips")
+      .select("*")
+      .eq("driver_assigned", driverId)
+      .gte("departure_time", startDate)
+      .lte("departure_time", endDate);
+
+    if (error) {
+      console.error("Supabase error:", error);
+      return res.status(400).json({ error: error.message });
+    }
+
+    res.status(200).json({
+      message: "Trips fetched successfully",
+      trips: data,
+    });
+  } catch (error) {
+    console.error("History fetch error:", error);
+    res.status(500).json({ error: "Server error while fetching history" });
+  }
+});
+
 // Search trips by origin and destination
 router.get("/search", async (req, res) => {
   const { origin, destination, date } = req.query;
@@ -63,7 +96,8 @@ router.get("/search", async (req, res) => {
     // Build query with better error handling
     let query = req.supabase
       .from("trips")
-      .select(`
+      .select(
+        `
         *,
         routes!inner (
           origin,
@@ -71,9 +105,10 @@ router.get("/search", async (req, res) => {
           distance_km,
           duration_minutes
         )
-      `)
+      `
+      )
       .gt("available_seats", 0)
-      .order('departure_time', { ascending: true });
+      .order("departure_time", { ascending: true });
 
     // Add case-insensitive filtering for origin/destination
     query = query
@@ -100,7 +135,7 @@ router.get("/search", async (req, res) => {
 
     // Always return results, even if empty
     const trips = data || [];
-    
+
     // Only cache non-empty successful results
     if (trips.length > 0) {
       try {
@@ -111,18 +146,18 @@ router.get("/search", async (req, res) => {
       }
     }
 
-    res.json({ 
-      source: "database", 
+    res.json({
+      source: "database",
       trips,
       count: trips.length,
-      filters: { origin, destination, date }
+      filters: { origin, destination, date },
     });
-
   } catch (error) {
     console.error("Search error:", error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: "Failed to search trips",
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      details:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 });

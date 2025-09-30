@@ -11,8 +11,8 @@
       background-position: center;
     ">
     <div class="container">
-              <!-- Login Modal -->
-      <div id="loginModal" class="modal hidden">
+        <!-- Login Modal -->
+      <div id="loginModal" class="modal">
         <div class="section modal-content">
           <h2>Welcome back to danfoo!</h2>
           <form id="loginForm">
@@ -35,7 +35,7 @@
       </div>
 
       <!-- Sign up Modal -->
-      <div id="signupModal" class="modal hidden">
+      <div id="signupModal" class="modal">
         <div class="section modal-content">
           <h2>Welcome to danfoo!</h2>
           <form id="signupForm">
@@ -44,6 +44,9 @@
 
             <label for="signupEmail">Email:</label>
             <input type="text" id="signupEmail" placeholder="Enter email" />
+
+            <label for="licenseNumber">License Number:</label>
+            <input type="text" id="licenseNumber" placeholder="Enter your license number" />
 
             <label for="signupPassword">Password:</label>
             <input
@@ -75,25 +78,6 @@
                 <button id="logoutButton" class="logout-btn">Log out</button>
             </div>
         </header>
-
-        <!-- Driver Login Modal -->
-        <div id="driverLoginModal" class="modal hidden">
-            <div class="section modal-content">
-                <h2>Driver Login</h2>
-                <form id="driverLoginForm">
-                    <label for="driverEmail">Email:</label>
-                    <input type="text" id="driverEmail" placeholder="Enter your driver email" />
-
-                    <label for="driverPassword">Password:</label>
-                    <input type="password" id="driverPassword" placeholder="Enter your password" />
-
-                    <label for="driverLicense">License Number:</label>
-                    <input type="text" id="driverLicense" placeholder="Driver license number" />
-
-                    <button class="btn">Sign In</button>
-                </form>
-            </div>
-        </div>
 
         <!-- Current Trip Section -->
         <div class="section">
@@ -163,31 +147,23 @@
             <h2>🚨 Emergency & Support</h2>
             <div class="form-grid">
                 <div class="form-group">
-                    <button class="btn btn-danger" onclick="reportEmergency()">
-                        Emergency Alert
-                    </button>
-                </div>
-                <div class="form-group">
-                    <button class="btn btn-secondary" onclick="reportIncident()">
+                    <button id="incident-button" class="btn btn-secondary" onclick="reportIncident()">
                         Report Incident
                     </button>
                 </div>
                 <div class="form-group">
-                    <button class="btn btn-secondary" onclick="contactSupport()">
+                    <button id="support-button" class="btn btn-secondary" onclick="contactSupport()">
                         Contact Support
                     </button>
                 </div>
                 <div class="form-group">
-                    <button class="btn" onclick="updateLocation()">
-                        Update Location
-                    </button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Incident Report Modal -->
-    <div id="incidentModal" class="modal hidden">
+    <div id="incidentModal" class="modal">
         <div class="section modal-content">
             <h2>Report Incident</h2>
             <form id="incidentForm">
@@ -215,5 +191,6 @@
         </div>
     </div>
     </div>
+    <script src="driver.js"></script>
 </body>
 </html>
